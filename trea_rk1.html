@@ -1,0 +1,89 @@
+<html>
+	<head>
+		<meta charset='UTF-8'>
+	</head>
+	<body>
+		<canvas id='RK_01' width='480' height='320'>
+		<script type="text/javascript" src="jaja.js"></script>
+		<script>
+		var canvas=document.getElementById('RK_01');
+		var ctx = canvas.getContext('2d');
+		var x,y;
+		var arr = [10,11, 12, 13, 15,16,17, 20, 25]; //не забыть измениить отрисолвку для сравнения
+		for (var i=0; i<canvas.height; i++) {
+			ctx.fillRect(0, i, 1, 1);
+			ctx.fillRect(canvas.width-1, i, 1, 1);
+		}
+		for (var i=0; i<canvas.width; i++) {
+			ctx.fillRect(i, 0, 1, 1);
+			ctx.fillRect(i, canvas.height-1, 1, 1);
+		}
+
+		line(20, 10, 41, 100);
+		drawLines(150);
+		ctx.fillStyle='#000';
+
+		function line(ax, ay, bx, by) {
+			var steep = false
+			if (Math.abs(ax - bx) < Math.abs(ay - by)) {
+				ax = ay + (ay = ax, 0)
+				bx = by + (by = bx, 0)
+				steep = true
+			}
+			if (ax > bx) {
+				ax = bx + (bx = ax, 0)
+				ay = by + (by = ay, 0)
+			}
+			var dx = bx - ax
+			var dy = by - ay
+			var derror2 = Math.abs(dy) * 2
+			var error2 = 0
+			var y = ay
+			for (var x = ax; x <= bx; x++) {
+				if (steep) {
+					ctx.fillRect(y, x, 1, 1)
+				} else {
+					ctx.fillRect(x, y, 1, 1)
+				}
+				error2 += derror2
+				if (error2 > dx) {
+					y += (by > ay ? 1 : -1)
+					error2 -= dx * 2
+				}
+			}
+		}
+
+	function drawLines(cy) {
+		if (arr.length <= 2) {
+			return
+		}
+		var i = 0;
+		while(true) { 
+			//for(var i = 0; i <= 1; i += 2) {
+			var dx = arr[i+1] - arr[i];
+			var di=i;  
+			console.log('вход',i, 'di=',di, 'dx=',dx, 'di2=',di2, 'dx2=',dx);
+			while (dx == 1) { di = di+1; dx = arr [di+1] - arr[di];
+				//console.log("цикл раз", i, 'di=',di, 'dx=',dx);
+			}
+			var di2 = di + 1;
+			dx = arr[di+2] - arr[di+1];
+			//console.log('ncn','i=',i,'di=',di, 'di2=',di2, 'dx2=',dx);
+			while (dx == 1) { di2 = di+1; dx = arr [di2+1] - arr[di2];
+				di = di+1;
+				//console.log('цикл два','di=',di, 'di2=',di2, 'dx2=',dx);
+			}
+			//console.log('цикл два выход','di=',di, 'di2=',di2, 'dx2=',dx)
+			line(arr[i], cy, arr[di2], cy);
+			console.log('рисуем от i=',i, 'до di2=',di2);
+			i = di2+1;
+			if (di2 >= arr.length) {break;} 
+		}
+		ctx.fillStyle='#F00'; //для сравнения
+		line(10, cy+1, 17, cy+1);
+		line(20, cy+1, 25, cy+1);
+	}
+		</script>
+		</canvas>
+	</body>
+</html>

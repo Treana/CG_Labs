@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>rk 3</title>
+</head>
+<body oncontextmenu="return false;">
+	<br> Введите координаты вершины в поле ниже, либо кликните левой кнопкой мыши в нужную точку</br>
+	Ввведите координаты: х=<input type="text" id="x"> у=<input type="text" id="y"> <input type="button" value="Рассчитать" id="doBtn"><br>
+	<canvas id="canvas" width=1000 height=500></canvas><br>
+
+	<script>
+	var ctx = document.querySelectorAll('#canvas')[0].getContext('2d')
+	var color = '#000'
+
+	var dx=0,dy=0,angleV=0,scaleV=1;
+	var coords = [];
+
+	function calculate (coords) {
+		document.write("<br>исходные координаты  ("+coords[0]+","+coords[1]+")<br>")
+		var dr = 30*Math.PI/180
+		rotate(dr)
+		//console.log("111 ", coords[0], ",", coords[1], "dr", dr)
+		document.write("<br>координаты после поворота на 30 градусов  ("+(coords[0] |0)+","+(coords[1] |0)+")<br>")
+		move (50, 0)
+		//console.log("111 ", coords[0], ",", coords[1])
+		document.write("<br>координаты со сдвигом ("+(coords[0] |0)+","+(coords[1] |0)+")<br>")
+		var dr = -30*Math.PI/180
+		rotate(dr)
+		//console.log("111 ", coords[0], ",", coords[1], "dr", dr)
+		document.write("<br>координаты после поворота на -30 градусов  ("+(coords[0] |0) +","+(coords[1] |0)+")<br>")
+	}
+
+	function MultACd(A,Cd) {
+		console.log("mult", A, Cd)
+		var U=[0,0,0];
+		for (var i=0; i<3;i++)
+			for (var j=0; j<3; j++)
+				U[i]+=A[i+j*3]*Cd[j];
+		coords[0]=U[0] |0; coords[1]=U[1] |0;
+	}
+
+	function transform(A) {
+		var Cd=[coords[0],coords[1],1];
+		MultACd(A,Cd);
+		console.log("after transform ", coords[0],",",coords[1])
+	}
+	function move(dx,dy) {
+		//console.log("move ",dx," ",dy)
+		var A = [	1,0,0,
+			0,1,0,
+			dx,dy,1];
+		transform(A);
+	}
+	function rotate(angle) {
+		//console.log("rotate ", angle)
+		var B = [	Math.cos(angle), Math.sin(angle), 0,
+			-Math.sin(angle), Math.cos(angle), 0,
+			0, 0, 1];
+		transform(B);
+
+	}
+	function scale(scale) {
+		//console.log("scale", scale)
+		var C = [	scale, 0, 0,
+			0, scale, 0,
+			0, 0, 1];
+		transform(C);
+	}
+
+	var $ = document.querySelector.bind(document)
+
+	$('#canvas').addEventListener('click', function (e)  {
+		if (e.which == 1) {
+			coords.push(e.offsetX)
+			coords.push(e.offsetY)
+		} else if (e.which == 2) {
+			coords = []
+		}
+		calculate(coords)
+	})
+	$('#canvas').addEventListener('contextmenu', function (e)  {
+		coords.pop()
+		coords.pop()
+		paint()
+	})
+	$("#doBtn").addEventListener('click', function(e) {
+		coords[0] = $("#x").value
+		coords [1]= $("#y").value
+		calculate (coords)
+	})
+
+	</script>
+</body>
+</html>

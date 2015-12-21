@@ -1,0 +1,150 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>lab 4</title>
+</head>
+<body oncontextmenu="return false;">
+	<br>ЛКМ - добавить вершину, ПКМ - убрать вершину. Колёсико - стереть всё.<br>
+	<br>исходные координаты (,)<br>
+	<canvas id="canvas" width=1000 height=500></canvas><br>
+	<input type="text" id="moveVx"> <input type="text" id="moveVy"> <input type="button" value="Сдвинуть" id="moveBtn"><br>
+	<input type="text" id="angleV"> радиан <input type="button" value="Повернуть" id="angleBtn"><br> 
+	<input type="text" id="scaleV"> <input type="button" value="Масштабировать" id="scaleBtn"><br>
+	<script>
+	var ctx = document.querySelectorAll('#canvas')[0].getContext('2d')
+	var abs = Math.abs
+	var color = '#000'
+
+	var x = 99; var y = 99;
+	var xn1, yn1, xn2, yn2;
+	var dx=0,dy=0,angleV=0,scaleV=1;
+	var coords = [];
+
+		function dot(x, y) {
+			ctx.fillStyle = color;
+			ctx.fillRect((x | 0), (y | 0), 1, 1)
+		}
+
+	function line(ax, ay, bx, by) {
+			var steep = false
+			if (abs(ax - bx) < abs(ay - by)) {
+				ax = ay + (ay = ax, 0)
+				bx = by + (by = bx, 0)
+				steep = true
+			}
+			if (ax > bx) {
+				ax = bx + (bx = ax, 0)
+				ay = by + (by = ay, 0)
+			}
+			var dx = bx - ax
+			var dy = by - ay
+			var derror2 = abs(dy) * 2
+			var error2 = 0
+			var y = ay
+			for (var x = ax; x <= bx; x++) {
+				if (steep) {
+					dot(y, x)
+				} else {
+					dot(x, y)
+				}
+				error2 += derror2
+				if (error2 > dx) {
+					y += (by > ay ? 1 : -1)
+					error2 -= dx * 2
+				}
+			}
+		}
+	function polygon(coords) {
+			if (coords.length == 0) {
+				return
+			}
+			prevX = coords[coords.length - 2]
+			prevY = coords[coords.length - 1]
+			for (var i = 0; i <= coords.length; i = i + 2) {
+				line(prevX, prevY, coords[i], coords[i + 1])
+				prevX = coords[i]
+				prevY = coords[i + 1]
+			}
+		}
+
+	function paint() {
+		ctx.fillStyle = '#FFF'
+		ctx.fillRect(0, 0, 1000, 500)
+		color = '#F00'
+		polygon(coords)		
+	}
+
+	function MultACd(A,Cd) {
+		var U=[0,0,0];
+		for (var i=0; i<3;i++)
+			for (var j=0; j<3; j++)
+				U[i]+=A[i+j*3]*Cd[j];
+		Cd[0]=U[0]; Cd[1]=U[1];
+	}
+
+	function transform(A) {
+		var size=coords.length/2;
+		for (var i=0; i<size; i++) {
+			var Cd=[coords[2*i],coords[2*i+1],1];
+			MultACd(A,Cd);
+			coords[2*i]=Cd[0]; coords[2*i+1]=Cd[1];
+		}
+		paint()
+	}
+	function move(dx,dy) {
+		console.log("move ",dx," ",dy)
+		var A = [	1,0,0,
+			0,1,0,
+			dx,dy,1];
+		transform(A);
+			}
+	function rotate(angle) {
+		var B = [	Math.cos(angle), Math.sin(angle), 0,
+			(-1)*Math.sin(angle), Math.cos(angle), 0,
+			0, 0, 1];
+		transform(B);
+	}
+	function scale(scale) {
+		var C = [	scale, 0, 0,
+			0, scale, 0,
+			0, 0, 1];
+		transform(C);
+	}
+
+	function onClick() {
+		console.log("im here")
+	}
+
+	var $ = document.querySelector.bind(document)
+
+	$('#canvas').addEventListener('click', function (e)  {
+		if (e.which == 1) {
+			coords.push(e.offsetX)
+			coords.push(e.offsetY)
+		} else if (e.which == 2) {
+			coords = []
+		}
+		paint()
+	})
+	$('#canvas').addEventListener('contextmenu', function (e)  {
+		coords.pop()
+		coords.pop()
+		paint()
+	})
+
+	$("#moveBtn").addEventListener('click', function(e) {
+		var dx = $("#moveVx").value
+		var dy = $("#moveVy").value
+		move(dx, dy)
+	})
+	$("#scaleBtn").addEventListener('click', function(e) {
+		var scaleV = $("#scaleV").value
+		scale(scaleV)
+	})
+	$("#angleBtn").addEventListener('click', function(e) {
+		var angleV = $("#angleV").value
+		rotate(angleV)
+	})
+	</script>
+</body>
+</html>

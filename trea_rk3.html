@@ -7,6 +7,7 @@
 <body oncontextmenu="return false;">
 	<br> Введите координаты вершины в поле ниже, либо кликните левой кнопкой мыши в нужную точку</br>
 	Ввведите координаты: х=<input type="text" id="x"> у=<input type="text" id="y"> <input type="button" value="Рассчитать" id="doBtn"><br>
+	<div id="output"></div>
 	<canvas id="canvas" width=1000 height=500></canvas><br>
 
 	<script>
@@ -17,22 +18,19 @@
 	var coords = [];
 
 	function calculate (coords) {
-		document.write("<br>исходные координаты  ("+coords[0]+","+coords[1]+")<br>")
+		$("#output").innerHTML = "";
+		$("#output").innerHTML += "<br>исходные координаты  ("+coords[0]+","+coords[1]+")<br>"
 		var dr = 30*Math.PI/180
 		rotate(dr)
-		//console.log("111 ", coords[0], ",", coords[1], "dr", dr)
-		document.write("<br>координаты после поворота на 30 градусов  ("+(coords[0] |0)+","+(coords[1] |0)+")<br>")
+		$("#output").innerHTML += "<br>координаты после поворота на 30 градусов  ("+(coords[0] |0)+","+(coords[1] |0)+")<br>";
 		move (50, 0)
-		//console.log("111 ", coords[0], ",", coords[1])
-		document.write("<br>координаты со сдвигом ("+(coords[0] |0)+","+(coords[1] |0)+")<br>")
+		$("#output").innerHTML += "<br>координаты со сдвигом ("+(coords[0] |0)+","+(coords[1] |0)+")<br>"
 		var dr = -30*Math.PI/180
 		rotate(dr)
-		//console.log("111 ", coords[0], ",", coords[1], "dr", dr)
-		document.write("<br>координаты после поворота на -30 градусов  ("+(coords[0] |0) +","+(coords[1] |0)+")<br>")
+		$("#output").innerHTML += "<br>координаты после поворота на -30 градусов  ("+(coords[0] |0) +","+(coords[1] |0)+")<br>"
 	}
 
 	function MultACd(A,Cd) {
-		console.log("mult", A, Cd)
 		var U=[0,0,0];
 		for (var i=0; i<3;i++)
 			for (var j=0; j<3; j++)
@@ -43,17 +41,14 @@
 	function transform(A) {
 		var Cd=[coords[0],coords[1],1];
 		MultACd(A,Cd);
-		console.log("after transform ", coords[0],",",coords[1])
 	}
 	function move(dx,dy) {
-		//console.log("move ",dx," ",dy)
 		var A = [	1,0,0,
 			0,1,0,
 			dx,dy,1];
 		transform(A);
 	}
 	function rotate(angle) {
-		//console.log("rotate ", angle)
 		var B = [	Math.cos(angle), Math.sin(angle), 0,
 			-Math.sin(angle), Math.cos(angle), 0,
 			0, 0, 1];
@@ -61,7 +56,6 @@
 
 	}
 	function scale(scale) {
-		//console.log("scale", scale)
 		var C = [	scale, 0, 0,
 			0, scale, 0,
 			0, 0, 1];
